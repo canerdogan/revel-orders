@@ -3,7 +3,7 @@ package chatroom
 import (
 	"container/list"
 	"time"
-	"github.com/canerdogan/emre/app/models"
+	"github.com/canerdogan/revel-orders/app/models"
 )
 
 type Event struct {

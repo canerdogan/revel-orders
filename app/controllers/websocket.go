@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/revel/revel"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/golang.org/x/net/websocket"
-	"github.com/canerdogan/emre/app/chatroom"
-	"github.com/canerdogan/emre/app/models"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/golang.org/x/net/websocket"
+	"github.com/canerdogan/revel-orders/app/chatroom"
+	"github.com/canerdogan/revel-orders/app/models"
 )
 
 type WebSocket struct {

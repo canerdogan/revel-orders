@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/robfig/pathtree"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/robfig/pathtree"
 )
 
 type Route struct {

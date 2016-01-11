@@ -3,7 +3,7 @@ package revel
 import (
 	"reflect"
 
-	"github.com/canerdogan/emre/Godeps/_workspace/src/golang.org/x/net/websocket"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/golang.org/x/net/websocket"
 )
 
 var (

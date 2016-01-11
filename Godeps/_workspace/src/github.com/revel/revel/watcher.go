@@ -1,7 +1,7 @@
 package revel
 
 import (
-	"github.com/canerdogan/emre/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
 	"os"
 	"path"
 	"path/filepath"

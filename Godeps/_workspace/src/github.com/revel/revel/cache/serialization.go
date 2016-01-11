@@ -3,7 +3,7 @@ package cache
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
 	"reflect"
 	"strconv"
 )

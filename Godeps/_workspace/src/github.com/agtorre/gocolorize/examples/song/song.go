@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/agtorre/gocolorize"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/agtorre/gocolorize"
 )
 
 func main() {

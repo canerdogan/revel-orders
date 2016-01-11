@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/canerdogan/emre",
+	"ImportPath": "github.com/canerdogan/revel-orders",
 	"GoVersion": "go1.5.1",
 	"Packages": [
 		"./..."

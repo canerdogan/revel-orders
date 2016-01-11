@@ -1,8 +1,8 @@
 package revel
 
 import (
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/agtorre/gocolorize"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/robfig/config"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/agtorre/gocolorize"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/robfig/config"
 	"go/build"
 	"io"
 	"io/ioutil"

@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"database/sql"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/go-gorp/gorp"
-	_ "github.com/canerdogan/emre/Godeps/_workspace/src/github.com/mattn/go-sqlite3"
-	"github.com/canerdogan/emre/Godeps/_workspace/src/github.com/revel/modules/db/app"
-	r "github.com/canerdogan/emre/Godeps/_workspace/src/github.com/revel/revel"
-	"github.com/canerdogan/emre/app/models"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/go-gorp/gorp"
+	_ "github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/mattn/go-sqlite3"
+	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/modules/db/app"
+	r "github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/canerdogan/revel-orders/app/models"
 )
 
 var (
