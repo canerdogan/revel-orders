@@ -1,14 +1,10 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
 module:testrunner
 
-# WebSocket demo
-GET     /                                       Application.Index
-GET     /api                                    Application.Api
-GET     /remove/:id                             Application.Remove
-WS      /ws                                     WebSocket.RoomSocket
+# Routes
+GET     /                   Application.Index
+GET     /api                Application.Api
+GET     /remove/:id         Application.Remove
+WS      /ws                 WebSocket.RoomSocket
 
 # Map static resources from the /app/public folder to the /public path
-GET     /public/*filepath                       Static.Serve("public")
+GET     /public/*filepath   Static.Serve("public")

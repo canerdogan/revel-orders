@@ -2,21 +2,21 @@ package models
 
 import (
 	"fmt"
-	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/go-gorp/gorp"
-	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/go-gorp/gorp"
+	"github.com/revel/revel"
 )
 
 type Requests struct {
-	RequestsId   int
-	UserId       int
-	Alias        string
-	RequestType  string
-	RequestCount int
-	IsActive     bool
-	RequestTime  int64
+	RequestsId   int		`db:"requests_id" json:"requests_id"`
+	UserId       int		`db:"user_id" json:"user_id"`
+	Alias        string		`db:"alias" json:"alias"`
+	RequestType  string		`db:"request_type" json:"request_type"`
+	RequestCount int		`db:"request_count" json:"request_count"`
+	IsActive     bool		`db:"is_active" json:"is_active"`
+	RequestTime  int64		`db:"request_time" json:"request_time"`
 
 	// Transient
-	User *User
+	User *User				`db:"user" json:"user"`
 }
 
 func (requests Requests) Validate(v *revel.Validation) {

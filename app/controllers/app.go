@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/revel/revel"
 	"github.com/canerdogan/revel-orders/app/chatroom"
 	"github.com/canerdogan/revel-orders/app/models"
 )
@@ -23,7 +23,7 @@ func (c Application) loadRequestsById(id int) *models.Requests {
 }
 
 func (c Application) Index() revel.Result {
-	requests, err := c.Txn.Select(models.Requests{}, `SELECT * FROM Requests WHERE IsActive > 0`)
+	requests, err := c.Txn.Select(models.Requests{}, `SELECT * FROM Requests WHERE is_active > 0`)
 	if err != nil {
 		return c.RenderText("Error trying to get records from DB.")
 	}
@@ -49,7 +49,7 @@ func (c Application) Remove(id int) revel.Result {
 
 func (c Application) Api(username string, requestType string, requestCount int) revel.Result {
 	var user models.User
-	if err := c.Txn.SelectOne(&user, "select * from User where Alias=?", username); err != nil {
+	if err := c.Txn.SelectOne(&user, "SELECT * FROM User where alias=?", username); err != nil {
 		return c.RenderText("We couldn't find User Alias")
 	} else {
 		request := models.Requests{

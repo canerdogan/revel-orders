@@ -8,10 +8,10 @@
             <h1>Orders</h1>
             <div id="orders">
                 <script type="text/html" id="message_tmpl">
-                  <a class="btn btn-default btn-block" href="remove/<%= event.RequestsId %>" id="<%= event.RequestsId %>">
-                       <strong><%= event.User.Name %>:</strong>
-                       <%= event.RequestType %>
-                       <span class="label label-danger"><%= event.RequestCount %> adet</span>
+                  <a class="btn btn-default btn-block" href="remove/<%= event.requests_id %>" id="<%= event.requests_id %>">
+                       <strong><%= event.user.name %>:</strong>
+                       <%= event.request_type %>
+                       <span class="label label-danger"><%= event.request_count %> adet</span>
                    </a>
                 </script>
                 {{if .requests}}

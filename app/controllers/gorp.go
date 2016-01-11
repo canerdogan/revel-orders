@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"database/sql"
-	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/go-gorp/gorp"
-	_ "github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/mattn/go-sqlite3"
-	"github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/modules/db/app"
-	r "github.com/canerdogan/revel-orders/Godeps/_workspace/src/github.com/revel/revel"
+	"github.com/go-gorp/gorp"
+	_ "github.com/go-sql-driver/mysql"
+	r "github.com/revel/revel"
 	"github.com/canerdogan/revel-orders/app/models"
 )
 
@@ -14,41 +13,86 @@ var (
 )
 
 func InitDB() {
-	db.Init()
-	Dbm = &gorp.DbMap{Db: db.Db, Dialect: gorp.SqliteDialect{}}
-
+    connectionString := getConnectionString()
+    if db, err := sql.Open("mysql", connectionString); err != nil {
+        r.ERROR.Fatal(err)
+    } else {
+        Dbm = &gorp.DbMap{
+            Db: db,
+            Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+    }
+    // Defines the table for use by GORP
+    // This is a function we will create soon.
 	setColumnSizes := func(t *gorp.TableMap, colSizes map[string]int) {
 		for col, size := range colSizes {
 			t.ColMap(col).MaxSize = size
 		}
 	}
 
-	t := Dbm.AddTable(models.User{}).SetKeys(true, "UserId")
+	t := Dbm.AddTable(models.User{}).SetKeys(true, "user_id")
 	setColumnSizes(t, map[string]int{
-		"Alias": 20,
-		"Name":  100,
+		"alias": 20,
+		"name":  100,
 	})
 
-	t = Dbm.AddTable(models.Requests{}).SetKeys(true, "RequestsId")
-	t.ColMap("User").Transient = true
+	t = Dbm.AddTable(models.Requests{}).SetKeys(true, "requests_id")
+	t.ColMap("user").Transient = true
 	// t.ColMap("RequestTime").Transient = true
 	setColumnSizes(t, map[string]int{
-		"Alias":        20,
-		"RequestType":  50,
-		"RequestCount": 50,
+		"alias":        20,
+		"request_type":  50,
+		"request_count": 50,
 	})
 
-	Dbm.TraceOn("[gorp]", r.INFO)
-	Dbm.CreateTables()
+    if err := Dbm.CreateTablesIfNotExists(); err != nil {
+        r.ERROR.Fatal(err)
+    }
 
 	demoUser := &models.User{1, "Demo User", "demo"}
-	err := Dbm.SelectOne(&demoUser, "SELECT * FROM User WHERE UserId=?", demoUser.UserId)
+	err := Dbm.SelectOne(&demoUser, "SELECT * FROM User WHERE user_id=?", demoUser.UserId)
 	if err != nil {
 		if err = Dbm.Insert(demoUser); err != nil {
 			panic(err)
 		}
 	}
 }
+
+// func InitDB() {
+// 	db.Init()
+// 	Dbm = &gorp.DbMap{Db: db.Db, Dialect: gorp.SqliteDialect{}}
+//
+// 	setColumnSizes := func(t *gorp.TableMap, colSizes map[string]int) {
+// 		for col, size := range colSizes {
+// 			t.ColMap(col).MaxSize = size
+// 		}
+// 	}
+//
+// 	t := Dbm.AddTable(models.User{}).SetKeys(true, "UserId")
+// 	setColumnSizes(t, map[string]int{
+// 		"Alias": 20,
+// 		"Name":  100,
+// 	})
+//
+// 	t = Dbm.AddTable(models.Requests{}).SetKeys(true, "RequestsId")
+// 	t.ColMap("User").Transient = true
+// 	// t.ColMap("RequestTime").Transient = true
+// 	setColumnSizes(t, map[string]int{
+// 		"Alias":        20,
+// 		"RequestType":  50,
+// 		"RequestCount": 50,
+// 	})
+//
+// 	Dbm.TraceOn("[gorp]", r.INFO)
+// 	Dbm.CreateTables()
+//
+// 	demoUser := &models.User{1, "Demo User", "demo"}
+// 	err := Dbm.SelectOne(&demoUser, "SELECT * FROM User WHERE UserId=?", demoUser.UserId)
+// 	if err != nil {
+// 		if err = Dbm.Insert(demoUser); err != nil {
+// 			panic(err)
+// 		}
+// 	}
+// }
 
 type GorpController struct {
 	*r.Controller
