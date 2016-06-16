@@ -4,6 +4,7 @@ import (
 	"github.com/revel/revel"
 	"github.com/canerdogan/revel-orders/app/chatroom"
 	"github.com/canerdogan/revel-orders/app/models"
+	"time"
 )
 
 type Application struct {
@@ -56,13 +57,15 @@ func (c Application) Api(username string, requestType string, requestCount int) 
 			Alias:        username,
 			RequestType:  requestType,
 			RequestCount: requestCount,
+			RequestTime:  time.Now(),
 			IsActive:     true,
 			User:         &user,
 		}
 
 		request.Validate(c.Validation)
+
 		if c.Validation.HasErrors() {
-			return c.RenderText("Error loading a requested user")
+			return c.RenderText("Error loadings a requested user")
 		} else {
 			if err := c.Txn.Insert(&request); err != nil {
 				return c.RenderText(

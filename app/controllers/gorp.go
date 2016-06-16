@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang.org/x/crypto/bcrypt"
 	"database/sql"
 	"github.com/go-gorp/gorp"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,7 +30,13 @@ func InitDB() {
 		}
 	}
 
-	t := Dbm.AddTable(models.User{}).SetKeys(true, "user_id")
+	t := Dbm.AddTable(models.Admin{}).SetKeys(true, "admin_id")
+	setColumnSizes(t, map[string]int{
+		"username": 20,
+		"password":  100,
+	})
+
+	t = Dbm.AddTable(models.User{}).SetKeys(true, "user_id")
 	setColumnSizes(t, map[string]int{
 		"alias": 20,
 		"name":  100,
@@ -37,6 +44,7 @@ func InitDB() {
 
 	t = Dbm.AddTable(models.Requests{}).SetKeys(true, "requests_id")
 	t.ColMap("user").Transient = true
+	t.ColMap("request_time").Transient = true
 	// t.ColMap("RequestTime").Transient = true
 	setColumnSizes(t, map[string]int{
 		"alias":        20,
@@ -52,6 +60,16 @@ func InitDB() {
 	err := Dbm.SelectOne(&demoUser, "SELECT * FROM User WHERE user_id=?", demoUser.UserId)
 	if err != nil {
 		if err = Dbm.Insert(demoUser); err != nil {
+			panic(err)
+		}
+	}
+
+	bcryptPassword, _ := bcrypt.GenerateFromPassword(
+			[]byte("admin"), bcrypt.DefaultCost)
+	adminUser := &models.Admin{1, "admin", "admin", bcryptPassword}
+	err = Dbm.SelectOne(&adminUser, "SELECT * FROM Admin WHERE admin_id=?", adminUser.AdminId)
+	if err != nil {
+		if err = Dbm.Insert(adminUser); err != nil {
 			panic(err)
 		}
 	}

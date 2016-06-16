@@ -1,0 +1,46 @@
+{{set . "title" "Emre Orders"}} {{append . "moreStyles" "/css/datepicker.css"}} {{append . "moreScripts" "/js/bootstrap-datepicker.js"}} {{template "header.html" .}}
+
+<div class="col-xs-6 col-xs-offset-3">
+    <h1>Add New User</h1>
+
+    <form action="/users/add" method="post" class="form-inline">
+        <div class="form-group">
+            <label for="inputName">Name</label>
+            <input type="text" name="name" class="form-control" id="inputName" placeholder="Name" value="{{.flash.name}}">
+        </div>
+        <div class="form-group">
+            <label for="inputAlias">Alias</label>
+            <input type="text" name="alias" class="form-control" id="inputAlias" placeholder="Alias" value="{{.flash.alias}}">
+        </div>
+        <button type="submit" class="btn btn-success">Add User</button>
+    </form>
+    <hr>
+    <h1>Users</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Alias</th>
+                <th></th>
+            </tr>
+
+            {{if .users}}
+            {{range .users}}
+            <tr>
+                <td>
+                    {{.Name}}
+                </td>
+                <td>
+                    {{.Alias}}
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-block" href="/users/{{.UserId}}/remove/" onclick="return confirm('Are you sure to delete this user?')" id="{{.UserId}}">Delete</a>
+                </td>
+            </tr>
+            {{end}}
+            {{end}}
+        </thead>
+    </table>
+</div>
+
+{{template "footer.html" .}}

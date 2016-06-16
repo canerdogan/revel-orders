@@ -1,0 +1,122 @@
+{{set . "title" "Emre Orders"}}
+
+{{append . "moreStyles" "/css/datepicker.css"}}
+{{append . "moreScripts" "/js/bootstrap-datepicker.js"}}
+
+{{template "header.html" .}}
+
+<div class="col-xs-6 col-xs-offset-3">
+    <h1>Dashboard</h1>
+
+    <form action="/dashboard" method="get" class="form-inline">
+        <div class="form-group">
+            <label for="inputStart">Start</label>
+            <input type="text" name="day1" class="form-control" id="dpd1" placeholder="Start Date" value="{{.day1}}">
+        </div>
+        <div class="form-group">
+            <label for="inputEnd">End</label>
+            <input type="text" name="day2" class="form-control" id="dpd2" placeholder="End Date" value="{{.day2}}">
+        </div>
+        <button type="submit" class="btn btn-success">Get</button>
+    </form>
+</div>
+
+<div class="col-xs-12 grafik">
+    <div class="row">
+        <div class="col-xs-3 col-xs-offset-2">
+            <canvas id="ordereditemspie" width="200" height="200"></canvas>
+        </div>
+        <div class="col-xs-6">
+            <h1>Ordered Items</h1>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>
+                        Users Name
+                    </th>
+                    <th>
+                        Total Request
+                    </th>
+                </tr>
+                {{if .requestsitems}}
+                {{range .requestsitems}}
+                <tr>
+                    <td>
+                        {{.RequestType}}
+                    </td>
+                    <td>
+                        {{.Total}}
+                     </td>
+                </tr>
+                {{end}}
+                {{end}}
+            </table>
+
+            <h1>User Order List</h1>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>
+                        Users Name
+                    </th>
+                    <th>
+                        Request Type
+                    </th>
+                    <th>
+                        Total Request
+                    </th>
+                </tr>
+                {{if .requests}}
+                {{range .requests}}
+                <tr>
+                    <td>
+                        {{.User.Name}}
+                    </td>
+                    <td>
+                        {{.RequestType}}
+                    </td>
+                    <td>
+                        {{.TotalRequestCount}}
+                     </td>
+                </tr>
+                {{end}}
+                {{end}}
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+    var dynamicColors = function() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
+    var ctx = $("#ordereditemspie");
+    var data = {
+    labels: [
+        {{range .requestsitems}}
+        "{{.RequestType}}",
+        {{end}}
+    ],
+    datasets: [
+        {
+            data: [
+                {{range .requestsitems}}
+                "{{.Total}}",
+                {{end}}
+            ],
+            backgroundColor: [
+                {{range .requestsitems}}
+                dynamicColors(),
+                {{end}}
+            ]
+        }]
+    };
+    var myPieChart = new Chart(ctx,{
+        type: 'pie',
+        data: data
+    });
+});
+</script>
+
+{{template "footer.html" .}}
