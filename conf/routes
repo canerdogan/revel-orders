@@ -10,6 +10,7 @@ GET     /remove/:id                             Application.Remove
 GET     /auth                                   Auth.Index
 GET     /dashboard                              Auth.Dashboard
 GET     /users                                  Auth.UserList
+GET     /users/:id/show                         Auth.User
 GET     /users/:id/remove                       Auth.UserRemove
 POST    /users/add                              Auth.UserAdd
 POST    /login                                  Auth.Login

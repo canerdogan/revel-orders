@@ -35,7 +35,7 @@ func (c Auth) connected() *models.Admin {
 	return nil
 }
 
-func (c Auth) getUSerById(id int) *models.User {
+func (c Auth) getUserById(id int) *models.User {
 	h, err := c.Txn.Get(models.User{}, id)
 	if err != nil {
 		panic(err)
@@ -104,22 +104,27 @@ func (c Auth) Dashboard() revel.Result {
 
 	var requests []*models.RequestCount
 	var requestsitems []*models.RequestItems
+	var requestsplace []*models.RequestPlace
 
 	if day2 == "" || day1 == "" {
-		requests = loadRequests(c.Txn.Select(models.RequestCount{}, "SELECT user_id, request_type, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests GROUP BY request_type, user_id"))
+		requests = loadRequests(c.Txn.Select(models.RequestCount{}, "SELECT user_id, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests GROUP BY user_id"))
 
 		requestsitems = loadRequestsItems(c.Txn.Select(models.RequestItems{}, "SELECT request_type, sum(request_count) as total FROM Requests GROUP BY request_type"))
-	} else {
-		layout := "01/02/2006"
-		t1, _ := time.Parse(layout, day1)
-		t2, _ := time.Parse(layout, day2)
 
-		requests = loadRequests(c.Txn.Select(models.RequestCount{}, "SELECT user_id, request_type, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests WHERE request_time_str >= ? AND request_time_str <= ? GROUP BY request_type, user_id", t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
+		requestsplace = loadRequestPlace(c.Txn.Select(models.RequestPlace{}, "SELECT request_place, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests GROUP BY request_place"))
+	} else {
+		layout := "01/02/2006 15:04:05"
+		t1, _ := time.Parse(layout, day1 + " 00:00:00")
+		t2, _ := time.Parse(layout, day2 + " 23:59:59")
+
+		requests = loadRequests(c.Txn.Select(models.RequestCount{}, "SELECT user_id, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests WHERE request_time_str >= ? AND request_time_str <= ? GROUP BY user_id", t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
 
 		requestsitems = loadRequestsItems(c.Txn.Select(models.RequestItems{}, "SELECT request_type, sum(request_count) as total FROM Requests WHERE request_time_str >= ? AND request_time_str <= ? GROUP BY request_type", t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
+
+		requestsplace = loadRequestPlace(c.Txn.Select(models.RequestPlace{}, "SELECT request_place, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests WHERE request_time_str >= ? AND request_time_str <= ? GROUP BY request_place", t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
 	}
 
-	return c.Render(requests, requestsitems, day1, day2)
+	return c.Render(requests, requestsitems, requestsplace, day1, day2)
 }
 
 func loadRequests(results []interface{}, err error) []*models.RequestCount {
@@ -142,6 +147,17 @@ func loadRequestsItems(results []interface{}, err error) []*models.RequestItems 
 		requestsitems = append(requestsitems, r.(*models.RequestItems))
 	}
 	return requestsitems
+}
+
+func loadRequestPlace(results []interface{}, err error) []*models.RequestPlace {
+	if err != nil {
+		panic(err)
+	}
+	var requests []*models.RequestPlace
+	for _, r := range results {
+		requests = append(requests, r.(*models.RequestPlace))
+	}
+	return requests
 }
 
 
@@ -194,7 +210,7 @@ func (c Auth) UserRemove(id int) revel.Result {
 		c.Flash.Error("Please log in first")
 		return c.Redirect(routes.Auth.Index())
 	}
-	existingUser := c.getUSerById(id)
+	existingUser := c.getUserById(id)
 	_, err := c.Txn.Delete(existingUser)
 
 	if err != nil {
@@ -203,4 +219,35 @@ func (c Auth) UserRemove(id int) revel.Result {
 
 	c.Flash.Success("User removed")
 	return c.Redirect(routes.Auth.UserList())
+}
+
+func (c Auth) User(id int) revel.Result {
+	if c.connected() == nil {
+		c.Flash.Error("Please log in first")
+		return c.Redirect(routes.Auth.Index())
+	}
+	existingUser := c.getUserById(id)
+
+	c.FlashParams()
+	day1 := c.Params.Get("day1")
+	day2 := c.Params.Get("day2")
+
+	var requests []*models.RequestPlace
+	var requestsitems []*models.RequestItems
+
+	if day2 == "" || day1 == "" {
+		requests = loadRequestPlace(c.Txn.Select(models.RequestPlace{}, "SELECT request_place, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests WHERE user_id = ? GROUP BY request_place", existingUser.UserId))
+
+		requestsitems = loadRequestsItems(c.Txn.Select(models.RequestItems{}, "SELECT request_type, sum(request_count) as total FROM Requests WHERE user_id = ? GROUP BY request_type", existingUser.UserId))
+	} else {
+		layout := "01/02/2006 15:04:05"
+		t1, _ := time.Parse(layout, day1 + " 00:00:00")
+		t2, _ := time.Parse(layout, day2 + " 23:59:59")
+
+		requests = loadRequestPlace(c.Txn.Select(models.RequestPlace{}, "SELECT request_place, sum(request_count) as total_request_count, count(requests_id) as total FROM Requests WHERE user_id = ? AND request_time_str >= ? AND request_time_str <= ? GROUP BY request_place", existingUser.UserId, t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
+
+		requestsitems = loadRequestsItems(c.Txn.Select(models.RequestItems{}, "SELECT request_type, sum(request_count) as total FROM Requests WHERE user_id = ? AND request_time_str >= ? AND request_time_str <= ? GROUP BY request_type", existingUser.UserId, t1.Format(SQL_DATE_FORMAT), t2.Format(SQL_DATE_FORMAT)))
+	}
+
+	return c.Render(requests, requestsitems, existingUser, day1, day2)
 }

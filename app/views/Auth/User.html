@@ -6,9 +6,9 @@
 {{template "header.html" .}}
 
 <div class="col-xs-6 col-xs-offset-3">
-    <h1>Dashboard</h1>
+    <h1>User Details: {{.existingUser.Name}}</h1>
 
-    <form action="/dashboard" method="get" class="form-inline">
+    <form action="{{url "Auth.User" .existingUser.UserId}}" method="get" class="form-inline">
         <div class="form-group">
             <label for="inputStart">Start</label>
             <input type="text" name="day1" class="form-control" id="dpd1" placeholder="Start Date" value="{{.day1}}">
@@ -21,13 +21,13 @@
     </form>
 </div>
 
-<div class="col-xs-8 col-xs-offset-2 grafik">
+<div class="col-xs-12 grafik">
     <div class="row">
-        <div class="col-xs-4">
+        <div class="col-xs-3 col-xs-offset-2">
             <canvas id="ordereditemspie" width="200" height="200"></canvas>
         </div>
-        <div class="col-xs-8">
-            <h1>Order by Items</h1>
+        <div class="col-xs-6">
+            <h1>Ordered Items</h1>
             <table class="table table-bordered table-hover table-striped">
                 <tr>
                     <th>
@@ -50,18 +50,12 @@
                 {{end}}
                 {{end}}
             </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4">
-            <canvas id="ordereduserspie" width="200" height="200"></canvas>
-        </div>
-        <div class="col-xs-8">
-            <h1>Order by User</h1>
+
+            <h1>Order by Locations</h1>
             <table class="table table-bordered table-hover table-striped">
                 <tr>
                     <th>
-                        User Name
+                        Request Place
                     </th>
                     <th>
                         Total Request
@@ -71,40 +65,10 @@
                 {{range .requests}}
                 <tr>
                     <td>
-                        <a href="{{url "Auth.User" .User.UserId}}">{{.User.Name}}</a>
-                    </td>
-                    <td>
-                        {{.TotalRequestCount}}
-                     </td>
-                </tr>
-                {{end}}
-                {{end}}
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4">
-            <canvas id="orderedplacepie" width="200" height="200"></canvas>
-        </div>
-        <div class="col-xs-8">
-            <h1>Order by Place</h1>
-            <table class="table table-bordered table-hover table-striped">
-                <tr>
-                    <th>
-                        Request Type
-                    </th>
-                    <th>
-                        Total Request
-                    </th>
-                </tr>
-                {{if .requestsplace}}
-                {{range .requestsplace}}
-                <tr>
-                    <td>
                         {{.RequestPlace}}
                     </td>
                     <td>
-                        {{.Total}}
+                        {{.TotalRequestCount}}
                      </td>
                 </tr>
                 {{end}}
@@ -122,16 +86,13 @@ $(function(){
         return "rgb(" + r + "," + g + "," + b + ")";
     }
     var ctx = $("#ordereditemspie");
-    var ctx2 = $("#ordereduserspie");
-    var ctx3 = $("#orderedplacepie");
-
     var data = {
-        labels: [
-            {{range .requestsitems}}
-            "{{.RequestType}}",
-            {{end}}
-        ],
-        datasets: [
+    labels: [
+        {{range .requestsitems}}
+        "{{.RequestType}}",
+        {{end}}
+    ],
+    datasets: [
         {
             data: [
                 {{range .requestsitems}}
@@ -140,46 +101,6 @@ $(function(){
             ],
             backgroundColor: [
                 {{range .requestsitems}}
-                dynamicColors(),
-                {{end}}
-            ]
-        }]
-    };
-    var data2 = {
-        labels: [
-            {{range .requests}}
-            "{{.User.Name}}",
-            {{end}}
-        ],
-        datasets: [
-        {
-            data: [
-                {{range .requests}}
-                "{{.TotalRequestCount}}",
-                {{end}}
-            ],
-            backgroundColor: [
-                {{range .requests}}
-                dynamicColors(),
-                {{end}}
-            ]
-        }]
-    };
-    var data3 = {
-        labels: [
-            {{range .requestsplace}}
-            "{{.RequestPlace}}",
-            {{end}}
-        ],
-        datasets: [
-        {
-            data: [
-                {{range .requestsplace}}
-                "{{.Total}}",
-                {{end}}
-            ],
-            backgroundColor: [
-                {{range .requestsplace}}
                 dynamicColors(),
                 {{end}}
             ]
@@ -188,14 +109,6 @@ $(function(){
     var myPieChart = new Chart(ctx,{
         type: 'pie',
         data: data
-    });
-    var myPieChart2 = new Chart(ctx2,{
-        type: 'pie',
-        data: data2
-    });
-    var myPieChart3 = new Chart(ctx3,{
-        type: 'pie',
-        data: data3
     });
 });
 </script>
