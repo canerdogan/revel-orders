@@ -13,18 +13,21 @@ func init() {
 		revel.FlashFilter,             // Restore and write the flash cookie.
 		revel.ValidationFilter,        // Restore kept validation errors and save new ones from cookie.
 		revel.I18nFilter,              // Resolve the requested language
-		HeaderFilter,                  // Add some security based headers
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.CompressFilter,          // Compress the result.
 		revel.ActionInvoker,           // Invoke the action.
+		CORSFilter,                    // Cross Origin Resource Sharing 
 	}
 }
 
-var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
-	// Add some common security headers
-	c.Response.Out.Header().Add("X-Frame-Options", "SAMEORIGIN")
-	c.Response.Out.Header().Add("X-XSS-Protection", "1; mode=block")
-	c.Response.Out.Header().Add("X-Content-Type-Options", "nosniff")
+var CORSFilter = func(c *revel.Controller, fc []revel.Filter) {
+        c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Response.Out.Header().Set("Access-Control-Allow-Methods", "GET")
+	c.Response.Out.Header().Set("Access-Control-Allow-Headers", "*")
+        // Stop here for a Preflighted OPTIONS request
+        if c.Request.Method == "OPTIONS" {
+                return
+        }
 
-	fc[0](c, fc[1:]) // Execute the next filter stage.
+        fc[0](c, fc[1:]) // Execute the next filter stage.                                                                                                                                                  
 }

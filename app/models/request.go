@@ -15,7 +15,7 @@ type Requests struct {
 	RequestType  	string		`db:"request_type" json:"request_type"`
 	RequestCount 	int			`db:"request_count" json:"request_count"`
 	IsActive     	bool		`db:"is_active" json:"is_active"`
-
+	RequestPlace	string		`db:"request_place" json:"request_place "`
 	// Transient
 	RequestTime  time.Time	`db:"request_time" json:"request_time"`
 	User *User				`db:"user" json:"user"`
@@ -31,6 +31,7 @@ func (requests Requests) Validate(v *revel.Validation) {
 	v.Required(requests.RequestType)
 	v.Required(requests.RequestCount)
 	v.Required(requests.RequestTime)
+	v.Required(requests.RequestPlace)
 }
 
 func (r *Requests) PreInsert(_ gorp.SqlExecutor) error {

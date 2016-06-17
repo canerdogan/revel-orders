@@ -48,7 +48,7 @@ func (c Application) Remove(id int) revel.Result {
 	return c.Redirect(Application.Index)
 }
 
-func (c Application) Api(username string, requestType string, requestCount int) revel.Result {
+func (c Application) Api(username string, requestType string, requestCount int, requestPlace string) revel.Result {
 	var user models.User
 	if err := c.Txn.SelectOne(&user, "SELECT * FROM User where alias=?", username); err != nil {
 		return c.RenderText("We couldn't find User Alias")
@@ -60,6 +60,7 @@ func (c Application) Api(username string, requestType string, requestCount int) 
 			RequestTime:  time.Now(),
 			IsActive:     true,
 			User:         &user,
+			RequestPlace: requestPlace,
 		}
 
 		request.Validate(c.Validation)
